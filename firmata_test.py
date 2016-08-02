@@ -8,6 +8,7 @@ Unit tests for firmata.py.
 import unittest
 
 import firmata
+import sysex
 
 
 class FirmataTest(unittest.TestCase):
@@ -168,6 +169,24 @@ class StringDataTest(FirmataTest):
 
     def test_str_method(self):
         self.assertEqual(str(self.sysex), 'T')
+
+
+class SysExRegistryTest(FirmataTest):
+
+    def setUp(self):
+        super().setUp()
+        self.factory = firmata.SysExRegistry()
+
+    def test_to_StringData(self):
+        self.assertIsInstance(
+            self.factory.from_sysex(self.string_sysex),
+            sysex.StringData)
+
+    def test_unkown_sysex(self):
+        unknown_sysex = firmata.SysExMessage(b'\xF0\xDE\xAD\xBE\xEF\xF7')
+        self.assertIs(
+            self.factory.from_sysex(unknown_sysex),
+            unknown_sysex)
 
 if __name__ == '__main__':
     unittest.main()

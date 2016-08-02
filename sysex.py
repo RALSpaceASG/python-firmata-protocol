@@ -94,3 +94,12 @@ class SysExRegistry(object):
 
     def __init__(self):
         self._sysex_types = self._firmata_sysex
+
+    def from_sysex(self, sysex):
+        try:
+            sysex = self._sysex_types[sysex.command](sysex)
+        except KeyError:
+            # if we have no handler for the specific
+            # sysex, just return the original
+            pass
+        return sysex
