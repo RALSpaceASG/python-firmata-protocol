@@ -156,5 +156,18 @@ class ProtocolVersionTest(FirmataTest):
             "<ProtocolVersion version:2.5>"
         )
 
+
+class StringDataTest(FirmataTest):
+
+    def setUp(self):
+        super().setUp()
+        self.sysex = sysex.StringData(self.string_sysex)
+
+    def test_StringData(self):
+        self.assertEqual(self.sysex.string, 'T')
+
+    def test_str_method(self):
+        self.assertEqual(str(self.sysex), 'T')
+
 if __name__ == '__main__':
     unittest.main()
