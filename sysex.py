@@ -63,14 +63,14 @@ class SysExRegistry(object):
     # start with the built-in Firmata types
     # we only include the ones that can be received
     _firmata_sysex = {
-        0x60: SerialMessage,
-        0x61: EncoderData,
-        0x6A: AnalogMappingResponse,
-        0x6C: CapabilityResponse,
-        0x6E: PinStateResponse,
+        # 0x60: SerialMessage,
+        # 0x61: EncoderData,
+        # 0x6A: AnalogMappingResponse,
+        # 0x6C: CapabilityResponse,
+        # 0x6E: PinStateResponse,
         STRING_DATA: StringData,
-        0x77: I2CReply,
-        0x79: ReportFirmware
+        # 0x77: I2CReply,
+        REPORT_FIRMWARE: ReportFirmware
     }
 
     def __init__(self):
