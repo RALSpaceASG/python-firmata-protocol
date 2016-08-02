@@ -8,7 +8,7 @@ Firmata SysEx messages in firmata-protocol module.
 
 from constants import (
     START_SYSEX, END_SYSEX,
-    STRING_DATA
+    STRING_DATA, REPORT_FIRMWARE
 )
 
 
@@ -48,6 +48,25 @@ class StringData(object):
 
     def __repr__(self):
         return "<StringData string:{}>".format(self.string)
+
+
+class ReportFirmware(object):
+    def __init__(self, sysex):
+        assert sysex.command == REPORT_FIRMWARE
+
+        self.major = sysex.data[0]
+        self.minor = sysex.data[1]
+
+        # get firmware names
+        self.name = bytes(
+            (msb << 7) + lsb for msb, lsb in zip(sysex.data[3::2],
+                                                 sysex.data[2::2])
+            ).decode('ascii')
+
+    def __repr__(self):
+        return "<ReportFirmware version:{}.{}, name:{}".format(
+            self.major, self.minor, self.name
+        )
 
 
 class SysExRegistry(object):
