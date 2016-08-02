@@ -16,7 +16,7 @@ class FirmataTest(unittest.TestCase):
     digital_data = bytes([0x99, 0b00110110, 0b00000001])
     # analog pin 9 14-bit value 3456
     analog_data = bytes([0xE9, 0x00, 0b11011])
-    string_data = bytes([0xF0, 0x71, 0x00, 0x54, 0xF7])
+    string_data = bytes([0xF0, 0x71, 0x54, 0x00, 0xF7])
 
     def setUp(self):
         self.digital_event = firmata.DigitalData(self.digital_data)
