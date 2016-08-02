@@ -84,7 +84,7 @@ class FirmataPacketBuffer(object):
     def __iter__(self):
         return self
 
-    def next(self):  # Python 2
+    def __next__(self):
         # frame MIDI packets
         # midi packets are command or data,
         # based on the most-significant bit
@@ -116,8 +116,8 @@ class FirmataPacketBuffer(object):
 
         return packet
 
-    def __next__(self):  # Python 3
-        return self.next()
+    def next(self):  # Python 2
+        return self.__next__()
 
 
 class FirmataConnection(object):
