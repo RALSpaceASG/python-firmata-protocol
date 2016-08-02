@@ -131,12 +131,12 @@ class SysExEventTest(FirmataTest):
         self.assertEqual(self.string_sysex.command, 0x71)
 
     def test_data(self):
-        self.assertEqual(self.string_sysex.data, b'\x00\x54')
+        self.assertEqual(self.string_sysex.data, b'\x54\x00')
 
     def test_repr(self):
         self.assertEqual(
             self.string_sysex.__repr__(),
-            "<SysExMessage command:\\x71, data:\\x00\\x54>"
+            "<SysExMessage command:\\x71, data:\\x54\\x00>"
         )
 
 
