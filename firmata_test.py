@@ -22,7 +22,8 @@ class FirmataTest(unittest.TestCase):
     def setUp(self):
         self.digital_event = firmata.DigitalData(self.digital_data)
         self.analog_event = firmata.AnalogData(self.analog_data)
-        self.string_sysex = firmata.SysExMessage(self.string_data)
+        self.sysex_message = firmata.SysExMessage(self.string_data)
+        self.string_sysex = sysex.StringData(self.sysex_message)
 
     def assertEventEqual(self, eventA, eventB):
         '''test if two events are equilavent'''
@@ -39,7 +40,7 @@ class FirmataPacketBufferTest(FirmataTest):
         self.datas = (
             self.digital_data, self.analog_data, self.string_data)
         self.events = (
-            self.digital_event, self.analog_event, self.string_sysex)
+            self.digital_event, self.analog_event, self.sysex_message)
 
     def assertNextEventEqual(self, event):
         self.assertEventEqual(self.packet_buffer.__next__(), event)
@@ -61,7 +62,7 @@ class FirmataPacketBufferTest(FirmataTest):
     def test_all(self):
         self.add_all()
 
-        events = (self.digital_event, self.analog_event, self.string_sysex)
+        events = (self.digital_event, self.analog_event, self.sysex_message)
 
         for packet, event in zip(self.packet_buffer, events):
             self.assertEventEqual(packet, event)
@@ -92,7 +93,7 @@ class FirmataPacketBufferTest(FirmataTest):
 
         self.packet_buffer.add_data(data2)
         self.assertNextEventEqual(self.analog_event)
-        self.assertNextEventEqual(self.string_sysex)
+        self.assertNextEventEqual(self.sysex_message)
         self.assertEmpty()
 
 
@@ -129,14 +130,14 @@ class AnalogDataTest(FirmataTest):
 class SysExEventTest(FirmataTest):
 
     def test_command_byte(self):
-        self.assertEqual(self.string_sysex.command, 0x71)
+        self.assertEqual(self.sysex_message.command, 0x71)
 
     def test_data(self):
-        self.assertEqual(self.string_sysex.data, b'\x54\x00')
+        self.assertEqual(self.sysex_message.data, b'\x54\x00')
 
     def test_repr(self):
         self.assertEqual(
-            self.string_sysex.__repr__(),
+            self.sysex_message.__repr__(),
             "<SysExMessage command:\\x71, data:\\x54\\x00>"
         )
 
@@ -160,15 +161,11 @@ class ProtocolVersionTest(FirmataTest):
 
 class StringDataTest(FirmataTest):
 
-    def setUp(self):
-        super().setUp()
-        self.sysex = sysex.StringData(self.string_sysex)
-
     def test_StringData(self):
-        self.assertEqual(self.sysex.string, 'T')
+        self.assertEqual(self.string_sysex.string, 'T')
 
     def test_str_method(self):
-        self.assertEqual(str(self.sysex), 'T')
+        self.assertEqual(str(self.string_sysex), 'T')
 
 
 class SysExRegistryTest(FirmataTest):
@@ -179,7 +176,7 @@ class SysExRegistryTest(FirmataTest):
 
     def test_to_StringData(self):
         self.assertIsInstance(
-            self.factory.from_sysex(self.string_sysex),
+            self.factory.from_sysex(self.sysex_message),
             sysex.StringData)
 
     def test_unkown_sysex(self):
@@ -187,6 +184,21 @@ class SysExRegistryTest(FirmataTest):
         self.assertIs(
             self.factory.from_sysex(unknown_sysex),
             unknown_sysex)
+
+
+class FirmataConnectionTest(FirmataTest):
+
+    def setUp(self):
+        super().setUp()
+        self.connection = firmata.FirmataConnection()
+
+    def test_receive_AnalogData(self):
+        events = self.connection.receive_data(self.analog_data)
+        self.assertEventEqual(events[0], self.analog_event)
+
+    def test_receive_StringData(self):
+        events = self.connection.receive_data(self.string_data)
+        self.assertEventEqual(events[0], self.string_sysex)
 
 if __name__ == '__main__':
     unittest.main()

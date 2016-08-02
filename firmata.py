@@ -12,7 +12,7 @@ from constants import (
     START_SYSEX, END_SYSEX,
     DIGITAL_MESSAGE, ANALOG_MESSAGE, PROTOCOL_VERSION
 )
-from sysex import SysExMessage
+from sysex import SysExMessage, SysExRegistry
 
 
 class ProtocolError(Exception):
@@ -124,7 +124,10 @@ class FirmataConnection(object):
 
     def __init__(self):
 
+        self.incoming_buffer = FirmataPacketBuffer()
         self._data_to_send = bytearray()
+
+        self._sysex_dispatch = SysExRegistry()
 
     def data_to_send(self, amt=None):
         """
@@ -150,8 +153,26 @@ class FirmataConnection(object):
             self._data_to_send = self._data_to_send[amt:]
             return data
 
-    def receive_data():
-        pass
+    def receive_data(self, data):
+        """
+        Pass some received Firmata data to the connection for handling.
+        :param data: The data received from the device.
+        :type data: ``bytes``
+        :returns: A list of events that the device triggered by sending
+            this data.
+        """
+        events = []
+        self.incoming_buffer.add_data(data)
 
-    def initiate_connection():
+        try:
+            for packet in self.incoming_buffer:
+                if isinstance(packet, SysExMessage):
+                    packet = self._sysex_dispatch.from_sysex(packet)
+                events.append(packet)
+        except ProtocolError as e:
+            raise
+
+        return events
+
+    def initiate_connection(self):
         pass
