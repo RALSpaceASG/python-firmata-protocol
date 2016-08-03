@@ -39,7 +39,7 @@ class StringData(object):
         # convert data to string
         # group into tuples of (MSB, LSB)
         pairs = zip(sysex.data[1::2], sysex.data[::2])
-        string = bytes((msb << 7) + lsb for msb, lsb in pairs)
+        string = bytearray((msb << 7) + lsb for msb, lsb in pairs)
         # is it a good idea to decode?
         self.string = string.decode('ascii')
 
@@ -58,7 +58,7 @@ class ReportFirmware(object):
         self.minor = sysex.data[1]
 
         # get firmware names
-        self.name = bytes(
+        self.name = bytearray(
             (msb << 7) + lsb for msb, lsb in zip(sysex.data[3::2],
                                                  sysex.data[2::2])
             ).decode('ascii')
