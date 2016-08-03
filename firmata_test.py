@@ -25,6 +25,8 @@ class FirmataTest(unittest.TestCase):
         self.sysex_message = firmata.SysExMessage(self.string_data)
         self.string_sysex = sysex.StringData(self.sysex_message)
 
+        self.connection = firmata.FirmataConnection()
+
     def assertEventEqual(self, eventA, eventB):
         '''test if two events are equilavent'''
         # assume that if the representations match, that is sufficient
@@ -159,6 +161,30 @@ class ProtocolVersionTest(FirmataTest):
         )
 
 
+class FirmwareVersionTest(FirmataTest):
+
+    def setUp(self):
+        self.report_firmware_message = \
+            b'\xf0y\x02\x08T\x00e\x00s\x00t\x00.\x00i\x00n\x00o\x00\xf7'
+        self.report_firmware_sysex = \
+            firmata.SysExMessage(self.report_firmware_message)
+        self.report_firmware_event = \
+            sysex.ReportFirmware(self.report_firmware_sysex)
+
+    def test_version_numbers(self):
+        self.assertEqual(self.report_firmware_event.major, 2)
+        self.assertEqual(self.report_firmware_event.minor, 8)
+
+    def test_name(self):
+        self.assertEqual(self.report_firmware_event.name, 'Test.ino')
+
+    def test_repr(self):
+        self.assertEqual(
+            self.report_firmware_event.__repr__(),
+            "<ReportFirmware version:2.8, name:'Test.ino'>"
+        )
+
+
 class StringDataTest(FirmataTest):
 
     def test_StringData(self):
@@ -166,6 +192,12 @@ class StringDataTest(FirmataTest):
 
     def test_str_method(self):
         self.assertEqual(str(self.string_sysex), 'T')
+
+    def test_repr(self):
+        self.assertEqual(
+            self.string_sysex.__repr__(),
+            "<StringData string:'T'>"
+        )
 
 
 class SysExRegistryTest(FirmataTest):
@@ -187,10 +219,6 @@ class SysExRegistryTest(FirmataTest):
 
 
 class FirmataConnectionTest(FirmataTest):
-
-    def setUp(self):
-        super().setUp()
-        self.connection = firmata.FirmataConnection()
 
     def test_receive_AnalogData(self):
         events = self.connection.receive_data(self.analog_data)

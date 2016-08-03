@@ -47,7 +47,7 @@ class StringData(object):
         return self.string
 
     def __repr__(self):
-        return "<StringData string:{}>".format(self.string)
+        return "<StringData string:'{}'>".format(self.string)
 
 
 class ReportFirmware(object):
@@ -64,7 +64,7 @@ class ReportFirmware(object):
             ).decode('ascii')
 
     def __repr__(self):
-        return "<ReportFirmware version:{}.{}, name:{}".format(
+        return "<ReportFirmware version:{}.{}, name:'{}'>".format(
             self.major, self.minor, self.name
         )
 
