@@ -14,10 +14,10 @@ import sysex
 class FirmataTest(unittest.TestCase):
 
     # port 9 bitmask 0b10110110
-    digital_data = bytes([0x99, 0b00110110, 0b00000001])
+    digital_data = bytearray([0x99, 0b00110110, 0b00000001])
     # analog pin 9 14-bit value 3456
-    analog_data = bytes([0xE9, 0x00, 0b11011])
-    string_data = bytes([0xF0, 0x71, 0x54, 0x00, 0xF7])
+    analog_data = bytearray([0xE9, 0x00, 0b11011])
+    string_data = bytearray([0xF0, 0x71, 0x54, 0x00, 0xF7])
 
     def setUp(self):
         self.digital_event = firmata.DigitalData(self.digital_data)
@@ -36,13 +36,13 @@ class FirmataTest(unittest.TestCase):
 class FirmataPacketBufferTest(FirmataTest):
 
     def setUp(self):
-        super().setUp()
+        super(FirmataPacketBufferTest, self).setUp()
         self.packet_buffer = firmata.FirmataPacketBuffer()
 
-        self.datas = (
-            self.digital_data, self.analog_data, self.string_data)
-        self.events = (
-            self.digital_event, self.analog_event, self.sysex_message)
+        self.datas = map(bytes, (
+            self.digital_data, self.analog_data, self.string_data))
+        self.events = map(bytes, (
+            self.digital_event, self.analog_event, self.sysex_message))
 
     def assertNextEventEqual(self, event):
         self.assertEventEqual(self.packet_buffer.__next__(), event)
@@ -147,7 +147,7 @@ class SysExEventTest(FirmataTest):
 class ProtocolVersionTest(FirmataTest):
 
     def setUp(self):
-        self.version_data = [0xf9, 0x02, 0x05]
+        self.version_data = bytearray([0xf9, 0x02, 0x05])
         self.event = firmata.ProtocolVersion(self.version_data)
 
     def test_version_numbers(self):
@@ -164,10 +164,10 @@ class ProtocolVersionTest(FirmataTest):
 class FirmwareVersionTest(FirmataTest):
 
     def setUp(self):
-        super().setUp()
+        super(FirmwareVersionTest, self).setUp()
 
-        self.report_firmware_message = \
-            b'\xf0y\x02\x08T\x00e\x00s\x00t\x00.\x00i\x00n\x00o\x00\xf7'
+        self.report_firmware_message = bytearray(
+            b'\xf0y\x02\x08T\x00e\x00s\x00t\x00.\x00i\x00n\x00o\x00\xf7')
         self.report_firmware_sysex = \
             firmata.SysExMessage(self.report_firmware_message)
         self.report_firmware_event = \
@@ -209,7 +209,7 @@ class StringDataTest(FirmataTest):
 class SysExRegistryTest(FirmataTest):
 
     def setUp(self):
-        super().setUp()
+        super(SysExRegistryTest, self).setUp()
         self.factory = firmata.SysExRegistry()
 
     def test_to_StringData(self):
@@ -218,7 +218,8 @@ class SysExRegistryTest(FirmataTest):
             sysex.StringData)
 
     def test_unkown_sysex(self):
-        unknown_sysex = firmata.SysExMessage(b'\xF0\xDE\xAD\xBE\xEF\xF7')
+        unknown_sysex = firmata.SysExMessage(
+            bytearray(b'\xF0\xDE\xAD\xBE\xEF\xF7'))
         self.assertIs(
             self.factory.from_sysex(unknown_sysex),
             unknown_sysex)
