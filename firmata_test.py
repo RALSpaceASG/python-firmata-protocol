@@ -164,6 +164,8 @@ class ProtocolVersionTest(FirmataTest):
 class FirmwareVersionTest(FirmataTest):
 
     def setUp(self):
+        super().setUp()
+
         self.report_firmware_message = \
             b'\xf0y\x02\x08T\x00e\x00s\x00t\x00.\x00i\x00n\x00o\x00\xf7'
         self.report_firmware_sysex = \
@@ -183,6 +185,10 @@ class FirmwareVersionTest(FirmataTest):
             self.report_firmware_event.__repr__(),
             "<ReportFirmware version:2.8, name:'Test.ino'>"
         )
+
+    def test_through_connection(self):
+        events = self.connection.receive_data(self.report_firmware_message)
+        self.assertEventEqual(events[0], self.report_firmware_event)
 
 
 class StringDataTest(FirmataTest):
