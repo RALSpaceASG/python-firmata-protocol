@@ -206,6 +206,21 @@ class StringDataTest(FirmataTest):
         )
 
 
+class PinStateResponse(FirmataTest):
+
+    def setUp(self):
+        # pin 1, mode PIN_MODE_PWM, state 0x3fff (2^14 - 1)
+        self.pin_state_bytes = bytearray(b'\xf0\x6e\x01\x03\x7f\x7f\xf7')
+        self.pin_state_sysex = firmata.SysExMessage(self.pin_state_bytes)
+        self.pin_state_message = sysex.PinStateResponse(self.pin_state_sysex)
+
+    def test_repr(self):
+        self.assertEqual(
+            self.pin_state_message.__repr__(),
+            "<PinStateResponse pin:1, pin_mode:3, pin_state:16383>"
+        )
+
+
 class SysExRegistryTest(FirmataTest):
 
     def setUp(self):

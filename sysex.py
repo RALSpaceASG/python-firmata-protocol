@@ -8,7 +8,8 @@ Firmata SysEx messages in firmata-protocol module.
 
 from constants import (
     START_SYSEX, END_SYSEX,
-    STRING_DATA, REPORT_FIRMWARE
+    STRING_DATA, REPORT_FIRMWARE,
+    PIN_STATE_RESPONSE
 )
 
 
@@ -66,6 +67,23 @@ class ReportFirmware(object):
     def __repr__(self):
         return "<ReportFirmware version:{}.{}, name:'{}'>".format(
             self.major, self.minor, self.name
+        )
+
+
+class PinStateResponse(object):
+    def __init__(self, sysex):
+        assert sysex.command == PIN_STATE_RESPONSE
+
+        self.pin = sysex.data[0]
+        self.pin_mode = sysex.data[1]
+
+        self.pin_state = 0
+        for i, bits in enumerate(sysex.data[2:]):
+            self.pin_state += (bits & 0x7F) << i*7
+
+    def __repr__(self):
+        return "<PinStateResponse pin:{}, pin_mode:{}, pin_state:{}>".format(
+            self.pin, self.pin_mode, self.pin_state
         )
 
 
