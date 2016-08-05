@@ -93,6 +93,11 @@ class FirmataConnection(object):
 
         self._sysex_dispatch = SysExRegistry()
 
+    def _prepare_for_sending(self, data):
+        if not data:
+            return
+        self._data_to_send.extend(data)
+
     def data_to_send(self, amt=None):
         """
         Returns some data for sending out of the internal data buffer.
