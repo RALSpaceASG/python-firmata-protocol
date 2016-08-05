@@ -8,6 +8,16 @@ Constants from Firmata.h needed for the firmata protocol.
 START_SYSEX = 0xF0  # start a MIDI Sysex message
 END_SYSEX = 0xF7  # end a MIDI Sysex message
 
+# messages to firmata
+MSG_CMD_MIN = 0x80  # minimum value for a message from firmata
+REPORT_ANALOG = 0xC0  # enable analog input by pin #
+REPORT_DIGITAL = 0xD0  # enable digital input by port pair
+SET_PIN_MODE = 0xF4  # set a pin to INPUT/OUTPUT/PWM/etc
+SET_DIGITAL_PIN_VALUE = 0xF5  # set a single digital pin value
+START_SYSEX = 0xF0  # start a MIDI Sysex message
+END_SYSEX = 0xF7  # end a MIDI Sysex message
+SYSTEM_RESET = 0xFF  # reset from MIDI
+
 # messages from firmata
 DIGITAL_MESSAGE = 0x90  # send or receive data for a digital pin
 ANALOG_MESSAGE = 0xE0  # send or receive data for a PWM configured pin

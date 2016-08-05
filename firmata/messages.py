@@ -1,4 +1,5 @@
 from constants import (
+    SET_PIN_MODE,
     DIGITAL_MESSAGE, ANALOG_MESSAGE, PROTOCOL_VERSION
 )
 
@@ -38,3 +39,15 @@ class ProtocolVersion(object):
     def __repr__(self):
         return "<ProtocolVersion version:{:d}.{:d}>".format(
             self.major, self.minor)
+
+
+class FirmataMessages(object):
+
+    def set_digital_pin_mode(self, pin, mode):
+        super()._prepare_for_sending([SET_PIN_MODE, pin, mode])
+
+    def set_digital_pin_value(self, pin, value):
+        super()._prepare_for_sending([SET_PIN_MODE, pin, value])
+
+    def request_protocol_version_request(self):
+        super()._prepare_for_sending([PROTOCOL_VERSION])
