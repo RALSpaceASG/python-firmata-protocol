@@ -9,7 +9,7 @@ Firmata SysEx messages in firmata-protocol module.
 from constants import (
     START_SYSEX, END_SYSEX,
     STRING_DATA, REPORT_FIRMWARE,
-    PIN_STATE_RESPONSE
+    PIN_STATE_QUERY, PIN_STATE_RESPONSE
 )
 
 
@@ -67,6 +67,22 @@ class ReportFirmware(object):
     def __repr__(self):
         return "<ReportFirmware version:{}.{}, name:'{}'>".format(
             self.major, self.minor, self.name
+        )
+
+
+class PinStateQuery(object):
+    def __init__(self, pin):
+        self.pin = pin
+
+        self._tobytes = \
+            bytearray([START_SYSEX, PIN_STATE_QUERY, self.pin, END_SYSEX])
+
+    def tobytes(self):
+        return self._tobytes
+
+    def __repr__(self):
+        return "<PinStateQuery pin:{}>".format(
+            self.pin
         )
 
 
