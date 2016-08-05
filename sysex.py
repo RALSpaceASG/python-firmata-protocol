@@ -9,7 +9,7 @@ Firmata SysEx messages in firmata-protocol module.
 from constants import (
     START_SYSEX, END_SYSEX,
     STRING_DATA, REPORT_FIRMWARE,
-    PIN_STATE_RESPONSE
+    PIN_STATE_QUERY, PIN_STATE_RESPONSE
 )
 
 
@@ -121,3 +121,14 @@ class SysExRegistry(object):
             # sysex, just return the original
             pass
         return sysex
+
+
+class SysEx(object):
+
+    def send_query_firmware(self):
+        message = bytearray([START_SYSEX, REPORT_FIRMWARE, END_SYSEX])
+        super()._prepare_for_sending(message)
+
+    def send_pin_state_query(self, pin):
+        message = bytearray([START_SYSEX, PIN_STATE_QUERY, pin, END_SYSEX])
+        super()._prepare_for_sending(message)
